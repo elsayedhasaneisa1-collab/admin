@@ -3,411 +3,706 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EXAMORA | مولّد أكواد البرايم 👑</title>
+<title>EXAMORA Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
-const firebaseConfig={
-  apiKey:"AIzaSyDUqcwR53iSNt5tc1QKCW0ReiFpMP7IW1k",
-  authDomain:"nexora-a83c0.firebaseapp.com",
-  projectId:"nexora-a83c0",
-  databaseURL:"https://nexora-a83c0-default-rtdb.firebaseio.com",
-  appId:"1:394125653608:web:c8a83ab04694b7476eeddd"
-};
+const firebaseConfig={apiKey:"AIzaSyDUqcwR53iSNt5tc1QKCW0ReiFpMP7IW1k",authDomain:"nexora-a83c0.firebaseapp.com",projectId:"nexora-a83c0",databaseURL:"https://nexora-a83c0-default-rtdb.firebaseio.com",appId:"1:394125653608:web:c8a83ab04694b7476eeddd"};
 firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
 const rtdb=firebase.database();
 const auth=firebase.auth();
 </script>
 <style>
 *{font-family:'Cairo',sans-serif;box-sizing:border-box}
-body{background:#0a0e1a;color:#fff;min-height:100vh;margin:0;padding:16px}
-.card{background:linear-gradient(160deg,rgba(22,28,52,.9),rgba(12,16,32,.95));border:1px solid rgba(245,158,11,.14);border-radius:20px;backdrop-filter:blur(18px);padding:20px}
+body{background:#0a0e1a;color:#fff;min-height:100vh;margin:0;padding:0}
 .gold{background:linear-gradient(135deg,#fde68a,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
-.btn-gold{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1000;font-weight:900;border:none;cursor:pointer;padding:12px 20px;border-radius:12px;width:100%;font-size:14px}
-.btn-gold:hover{opacity:.9}
-.btn-red{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:900;border:none;cursor:pointer;padding:10px 16px;border-radius:10px;font-size:12px}
-input,select{background:#0e152c!important;color:#fff!important;border:1px solid rgba(245,158,11,.2)!important;border-radius:12px!important;width:100%;padding:12px;font-size:14px}
-.code-box{background:#000;border:1px dashed rgba(16,185,129,.5);border-radius:12px;padding:14px;font-family:monospace;font-size:16px;text-align:center;letter-spacing:2px;color:#6ee7b7;font-weight:900;cursor:pointer}
-.code-box:hover{background:#0a1f17}
+.card{background:linear-gradient(160deg,rgba(22,28,52,.9),rgba(12,16,32,.95));border:1px solid rgba(245,158,11,.14);border-radius:16px;backdrop-filter:blur(18px)}
+.btn{padding:10px 16px;border-radius:10px;font-weight:900;border:none;cursor:pointer;font-size:13px;transition:.2s}
+.btn:hover{opacity:.9}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1000}
+.btn-green{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.btn-red{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.btn-gray{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.1)}
+input,select,textarea{background:#0e152c!important;color:#fff!important;border:1px solid rgba(245,158,11,.2)!important;border-radius:10px!important;width:100%;padding:10px;font-size:13px;font-family:'Cairo',sans-serif}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#f59e0b!important}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{padding:10px;text-align:right;border-bottom:1px solid rgba(255,255,255,.08)}
+th,td{padding:10px 8px;text-align:right;border-bottom:1px solid rgba(255,255,255,.06)}
 th{background:rgba(245,158,11,.1);color:#fbbf24;font-weight:900}
 tr:hover{background:rgba(255,255,255,.03)}
-.badge{padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900}
+.badge{padding:3px 9px;border-radius:99px;font-size:10px;font-weight:900;display:inline-block}
 .badge.ok{background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.4)}
 .badge.no{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.4)}
-.badge.used{background:rgba(245,158,11,.2);color:#fbbf24;border:1px solid rgba(245,158,11,.4)}
-#toastBox{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;width:92%;max-width:400px}
+.badge.warn{background:rgba(245,158,11,.2);color:#fbbf24;border:1px solid rgba(245,158,11,.4)}
+.badge.prime{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff}
+.tab{padding:10px 14px;border-radius:10px;font-weight:800;font-size:12px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);white-space:nowrap;transition:.2s}
+.tab:hover{background:rgba(255,255,255,.08)}
+.tab.active{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;border-color:transparent}
+#toastBox{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:8px;width:92%;max-width:400px;pointer-events:none}
 .toast{padding:14px;border-radius:12px;font-size:13px;font-weight:800;animation:slide .3s}
 .toast.ok{background:linear-gradient(135deg,#10b981,#059669)}
 .toast.err{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.toast.info{background:linear-gradient(135deg,#1e293b,#334155)}
+.toast.info{background:linear-gradient(135deg,#1e293b,#334155);border:1px solid rgba(245,158,11,.3)}
 @keyframes slide{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal{position:fixed;inset:0;z-index:99998;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.show{display:flex}
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px)}
+.modal-box{position:relative;z-index:1;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;background:#0f172a;border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:20px}
+.stat{padding:16px;border-radius:14px;text-align:center}
+.stat-num{font-size:26px;font-weight:900;margin-top:4px}
+.stat-label{font-size:10px;color:#94a3b8;margin-top:2px}
+.empty{text-align:center;padding:40px 20px;color:#64748b;font-size:13px}
+.scroll-y{max-height:500px;overflow-y:auto}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,.3)}
+::-webkit-scrollbar-thumb{background:rgba(245,158,11,.4);border-radius:99px}
 </style>
 </head>
 <body>
 <div id="toastBox"></div>
 
-<!-- شاشة الدخول -->
-<div id="loginScreen" class="max-w-md mx-auto mt-20">
-  <div class="card text-center">
+<div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+  <div class="card p-6 w-full max-w-md text-center">
     <div class="text-5xl mb-4">🔐</div>
-    <h1 class="text-2xl gold mb-2">لوحة الأدمن</h1>
-    <p class="text-slate-400 text-sm mb-6">دخول مخصص للمسؤول فقط</p>
-    <input type="password" id="adminPass" placeholder="اكتب كلمة السر" onkeypress="if(event.key==='Enter')login()">
-    <button class="btn-gold mt-4" onclick="login()">دخول 🚀</button>
-    <p class="text-[10px] text-slate-500 mt-4">⚠️ أي محاولة دخول غلط بتتسجل</p>
+    <h1 class="text-2xl gold mb-2">Admin Panel</h1>
+    <input type="password" id="adminPass" placeholder="Password" onkeypress="if(event.key==='Enter')login()">
+    <button class="btn btn-gold w-full mt-4" onclick="login()">Login</button>
   </div>
 </div>
 
-<!-- لوحة التحكم -->
-<div id="adminPanel" class="hidden max-w-6xl mx-auto">
-  
-  <div class="card mb-4 flex justify-between items-center flex-wrap gap-3">
-    <div>
-      <h1 class="text-xl gold">👑 مولّد أكواد البرايم</h1>
-      <p class="text-xs text-slate-400 mt-1">EXAMORA Admin Panel</p>
+<div id="adminPanel" class="hidden">
+  <nav class="sticky top-0 z-40 bg-[#0a0e1a]/95 backdrop-blur-xl border-b border-amber-500/15 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex justify-between items-center gap-3 flex-wrap">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">👑</div>
+        <div>
+          <div class="gold font-black text-base">EXAMORA</div>
+          <div class="text-[10px] text-slate-400">Admin Panel</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="text-[11px] text-slate-400 hidden sm:block" id="currentTime">--:--</div>
+        <button class="btn btn-gray" onclick="refreshAll()">Refresh</button>
+        <button class="btn btn-red" onclick="logout()">Logout</button>
+      </div>
     </div>
-    <button class="btn-red" onclick="logout()">خروج 🚪</button>
+  </nav>
+
+  <div class="max-w-7xl mx-auto p-4 space-y-4">
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="card stat"><div class="text-2xl">👥</div><div class="stat-num gold" id="statStudents">—</div><div class="stat-label">Students</div></div>
+      <div class="card stat"><div class="text-2xl">📝</div><div class="stat-num text-blue-400" id="statExams">—</div><div class="stat-label">Exams</div></div>
+      <div class="card stat"><div class="text-2xl">🎫</div><div class="stat-num text-emerald-400" id="statCodes">—</div><div class="stat-label">Codes</div></div>
+      <div class="card stat"><div class="text-2xl">💎</div><div class="stat-num text-purple-400" id="statPrime">—</div><div class="stat-label">Prime</div></div>
+      <div class="card stat"><div class="text-2xl">⚔️</div><div class="stat-num text-amber-400" id="statBattles">—</div><div class="stat-label">Battles</div></div>
+      <div class="card stat"><div class="text-2xl">📢</div><div class="stat-num text-red-400" id="statAds">—</div><div class="stat-label">Ads</div></div>
+    </div>
+
+    <div class="flex gap-2 overflow-x-auto pb-2">
+      <button class="tab active" onclick="switchTab('students',this)">Students</button>
+      <button class="tab" onclick="switchTab('exams',this)">Exams</button>
+      <button class="tab" onclick="switchTab('codes',this)">Codes</button>
+      <button class="tab" onclick="switchTab('ads',this)">Ads</button>
+      <button class="tab" onclick="switchTab('groups',this)">Groups</button>
+    </div>
+
+    <div id="tab-students" class="tab-content card p-4">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h2 class="font-black text-lg">Students</h2>
+        <div class="flex gap-2 flex-wrap">
+          <input id="searchStudents" placeholder="Search" oninput="renderStudents()" style="width:200px;padding:8px">
+          <select id="filterStudents" onchange="renderStudents()" style="width:140px;padding:8px">
+            <option value="all">All</option>
+            <option value="prime">Prime</option>
+            <option value="banned">Banned</option>
+          </select>
+        </div>
+      </div>
+      <div class="scroll-y">
+        <table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Points</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="studentsTable"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-exams" class="tab-content card p-4 hidden">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h2 class="font-black text-lg">Exams</h2>
+        <div class="flex gap-2">
+          <button class="btn btn-green" onclick="openExamModal()">+ Add</button>
+          <input id="searchExams" placeholder="Search" oninput="renderExams()" style="width:180px;padding:8px">
+        </div>
+      </div>
+      <div class="scroll-y">
+        <table>
+          <thead><tr><th>Title</th><th>Subject</th><th>Month</th><th>Type</th><th>Q</th><th>Actions</th></tr></thead>
+          <tbody id="examsTable"><tr><td colspan="6" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-codes" class="tab-content card p-4 hidden">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h2 class="font-black text-lg">Codes</h2>
+        <div class="flex gap-2">
+          <button class="btn btn-green" onclick="openCodeModal()">+ Generate</button>
+          <button class="btn btn-red" onclick="deleteExpiredCodes()">Delete Expired</button>
+        </div>
+      </div>
+      <div class="scroll-y">
+        <table>
+          <thead><tr><th>Code</th><th>Type</th><th>Status</th><th>Expires</th><th>Used By</th><th>Actions</th></tr></thead>
+          <tbody id="codesTable"><tr><td colspan="6" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-ads" class="tab-content card p-4 hidden">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h2 class="font-black text-lg">Ads</h2>
+        <button class="btn btn-green" onclick="openAdModal()">+ Add</button>
+      </div>
+      <div id="adsList" class="grid gap-3"><div class="empty">Loading...</div></div>
+    </div>
+
+    <div id="tab-groups" class="tab-content card p-4 hidden">
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h2 class="font-black text-lg">Groups</h2>
+        <button class="btn btn-green" onclick="openGroupModal()">+ Add</button>
+      </div>
+      <div id="groupsList" class="grid gap-3"><div class="empty">Loading...</div></div>
+    </div>
+
   </div>
+</div>
 
-  <!-- إحصائيات -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-    <div class="card text-center">
-      <div class="text-2xl">📊</div>
-      <div class="text-2xl font-black gold mt-1" id="totalCodes">0</div>
-      <div class="text-[10px] text-slate-400">إجمالي الأكواد</div>
+<div id="examModal" class="modal">
+  <div class="modal-bg" onclick="closeModal('examModal')"></div>
+  <div class="modal-box">
+    <h3 class="font-black text-lg mb-4" id="examModalTitle">Add Exam</h3>
+    <input type="hidden" id="examId">
+    <div class="space-y-3">
+      <div><label class="text-xs text-slate-400 block mb-1">Title</label><input id="examTitle"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Subject</label><input id="examSubject"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1">Month (1-11)</label><input type="number" id="examMonth" min="1" max="11" value="1"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Type</label><select id="examType"><option value="free">Free</option><option value="prime">Prime</option></select></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Link</label><input id="examLink"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Questions Count</label><input type="number" id="examCount" value="0" min="0"></div>
     </div>
-    <div class="card text-center">
-      <div class="text-2xl">✅</div>
-      <div class="text-2xl font-black text-emerald-400 mt-1" id="activeCodes">0</div>
-      <div class="text-[10px] text-slate-400">نشطة</div>
-    </div>
-    <div class="card text-center">
-      <div class="text-2xl">🔒</div>
-      <div class="text-2xl font-black text-amber-400 mt-1" id="usedCodes">0</div>
-      <div class="text-[10px] text-slate-400">مستخدمة</div>
-    </div>
-    <div class="card text-center">
-      <div class="text-2xl">⌛</div>
-      <div class="text-2xl font-black text-red-400 mt-1" id="expiredCodes">0</div>
-      <div class="text-[10px] text-slate-400">منتهية</div>
+    <div class="flex gap-2 mt-5">
+      <button class="btn btn-gold flex-1" onclick="saveExam()">Save</button>
+      <button class="btn btn-gray" onclick="closeModal('examModal')">Cancel</button>
     </div>
   </div>
+</div>
 
-  <!-- توليد كود جديد -->
-  <div class="card mb-4">
-    <h2 class="font-black text-lg mb-4">⚡ توليد كود جديد</h2>
-    <div class="grid md:grid-cols-3 gap-3 mb-3">
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">المدة (بالأيام)</label>
-        <select id="duration">
-          <option value="7">7 أيام</option>
-          <option value="15">15 يوم</option>
-          <option value="30" selected>30 يوم</option>
-          <option value="60">60 يوم</option>
-          <option value="90">90 يوم</option>
-          <option value="365">سنة كاملة</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">النوع</label>
-        <select id="codeType">
-          <option value="VIP">VIP عادي</option>
-          <option value="BLACK">VIP BLACK 👑</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">عدد الأكواد</label>
-        <input type="number" id="count" value="1" min="1" max="50">
-      </div>
+<div id="codeModal" class="modal">
+  <div class="modal-bg" onclick="closeModal('codeModal')"></div>
+  <div class="modal-box">
+    <h3 class="font-black text-lg mb-4">Generate Codes</h3>
+    <div class="space-y-3">
+      <div><label class="text-xs text-slate-400 block mb-1">Duration (days)</label><select id="codeDuration"><option value="7">7</option><option value="15">15</option><option value="30" selected>30</option><option value="60">60</option><option value="90">90</option><option value="365">365</option></select></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Type</label><select id="codeType"><option value="VIP">VIP</option><option value="BLACK">BLACK</option></select></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Count (1-50)</label><input type="number" id="codeCount" value="1" min="1" max="50"></div>
     </div>
-    <button class="btn-gold" onclick="generateCodes()">🎲 توليد</button>
-
-    <!-- الأكواد المولدة -->
-    <div id="generatedBox" class="hidden mt-4">
-      <p class="text-xs text-slate-400 mb-2">✅ تم التوليد — دوس على أي كود للنسخ:</p>
+    <div id="generatedCodes" class="mt-4 hidden">
       <div id="generatedList" class="grid gap-2"></div>
-      <button class="btn-gold mt-3" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff" onclick="copyAll()">📋 نسخ الكل</button>
+      <button class="btn btn-gold w-full mt-3" onclick="copyAllCodes()">Copy All</button>
+    </div>
+    <div class="flex gap-2 mt-5">
+      <button class="btn btn-green flex-1" onclick="generateCodes()">Generate</button>
+      <button class="btn btn-gray" onclick="closeModal('codeModal')">Close</button>
     </div>
   </div>
+</div>
 
-  <!-- قائمة الأكواد -->
-  <div class="card">
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-      <h2 class="font-black text-lg">📋 كل الأكواد</h2>
-      <div class="flex gap-2">
-        <input id="searchInput" placeholder="🔍 ابحث..." oninput="renderCodes()" style="width:200px;padding:8px">
-        <button class="btn-red" onclick="deleteExpired()">حذف المنتهية</button>
+<div id="adModal" class="modal">
+  <div class="modal-bg" onclick="closeModal('adModal')"></div>
+  <div class="modal-box">
+    <h3 class="font-black text-lg mb-4" id="adModalTitle">Add Ad</h3>
+    <input type="hidden" id="adId">
+    <div class="space-y-3">
+      <div><label class="text-xs text-slate-400 block mb-1">Title</label><input id="adTitle"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Message</label><textarea id="adMessage" rows="3"></textarea></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Link</label><input id="adLink"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1">Color</label><select id="adColor"><option value="#ef4444">Red</option><option value="#f59e0b">Orange</option><option value="#10b981">Green</option><option value="#3b82f6">Blue</option><option value="#a855f7">Purple</option></select></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Status</label><select id="adActive"><option value="true">Active</option><option value="false">Paused</option></select></div>
       </div>
     </div>
-    <div style="overflow-x:auto">
-      <table>
-        <thead>
-          <tr>
-            <th>الكود</th>
-            <th>النوع</th>
-            <th>الحالة</th>
-            <th>ينتهي</th>
-            <th>مستخدم بواسطة</th>
-            <th>إجراءات</th>
-          </tr>
-        </thead>
-        <tbody id="codesTable">
-          <tr><td colspan="6" class="text-center text-slate-500 py-6">جاري التحميل...</td></tr>
-        </tbody>
-      </table>
+    <div class="flex gap-2 mt-5">
+      <button class="btn btn-gold flex-1" onclick="saveAd()">Save</button>
+      <button class="btn btn-gray" onclick="closeModal('adModal')">Cancel</button>
     </div>
   </div>
+</div>
 
+<div id="groupModal" class="modal">
+  <div class="modal-bg" onclick="closeModal('groupModal')"></div>
+  <div class="modal-box">
+    <h3 class="font-black text-lg mb-4" id="groupModalTitle">Add Group</h3>
+    <input type="hidden" id="groupId">
+    <div class="space-y-3">
+      <div><label class="text-xs text-slate-400 block mb-1">Name</label><input id="groupName"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Platform</label><select id="groupPlatform"><option value="واتساب">WhatsApp</option><option value="تليجرام">Telegram</option></select></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Link</label><input id="groupLink"></div>
+    </div>
+    <div class="flex gap-2 mt-5">
+      <button class="btn btn-gold flex-1" onclick="saveGroup()">Save</button>
+      <button class="btn btn-gray" onclick="closeModal('groupModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="studentModal" class="modal">
+  <div class="modal-bg" onclick="closeModal('studentModal')"></div>
+  <div class="modal-box">
+    <h3 class="font-black text-lg mb-4">Edit Student</h3>
+    <input type="hidden" id="studentId">
+    <div class="space-y-3">
+      <div><label class="text-xs text-slate-400 block mb-1">Name</label><input id="studentName" readonly></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Phone</label><input id="studentPhone" readonly></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Points</label><input type="number" id="studentPoints" value="0"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Status</label><select id="studentBanned"><option value="false">Active</option><option value="true">Banned</option></select></div>
+    </div>
+    <div class="flex gap-2 mt-5">
+      <button class="btn btn-gold flex-1" onclick="saveStudent()">Save</button>
+      <button class="btn btn-red" onclick="deleteStudent()">Delete</button>
+      <button class="btn btn-gray" onclick="closeModal('studentModal')">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// ⚠️ غيّر كلمة السر دي لحاجة معقدة وصعب تخمينها
-const ADMIN_PASSWORD = "Examora@Admin2025#Black";
+const ADMIN_PASSWORD="CHANGE_ME_STRONG_PASSWORD";
+let allStudents=[],allExams=[],allCodes=[],allAds=[],allGroups=[],lastGenCodes=[];
 
-let allCodes = [];
-let lastGenerated = [];
-
-// ============ تسجيل الدخول ============
 async function login(){
-  const pass = document.getElementById('adminPass').value;
-  if(pass !== ADMIN_PASSWORD){
-    showToast('❌ كلمة السر غلط', 'err');
-    // سجل المحاولة
-    try {
-      await rtdb.ref('admin_login_attempts/'+Date.now()).set({
-        time: Date.now(),
-        userAgent: navigator.userAgent,
-        success: false
-      });
-    } catch(e){}
-    return;
-  }
-  sessionStorage.setItem('admin_logged', '1');
-  showToast('✅ مرحباً يا أدمن', 'ok');
+  const pass=document.getElementById('adminPass').value;
+  if(pass!==ADMIN_PASSWORD){showToast('Wrong password','err');try{await rtdb.ref('admin_login_attempts/'+Date.now()).set({time:Date.now(),success:false});}catch(e){}return;}
+  sessionStorage.setItem('admin_logged','1');
+  showToast('Welcome Admin','ok');
   await auth.signInAnonymously().catch(()=>{});
+  showPanel();
+  await loadAllData();
+}
+
+function logout(){sessionStorage.removeItem('admin_logged');location.reload();}
+
+function showPanel(){
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('adminPanel').classList.remove('hidden');
-  loadCodes();
 }
 
-function logout(){
-  sessionStorage.removeItem('admin_logged');
-  location.reload();
+if(sessionStorage.getItem('admin_logged')==='1'){
+  showPanel();
+  auth.signInAnonymously().then(loadAllData).catch(loadAllData);
 }
 
-// تحقق من الجلسة
-if(sessionStorage.getItem('admin_logged') === '1'){
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('adminPanel').classList.remove('hidden');
-  auth.signInAnonymously().then(loadCodes).catch(loadCodes);
+async function loadAllData(){
+  await Promise.all([loadStudents(),loadExams(),loadCodes(),loadAds(),loadGroups()]);
+  updateStats();
 }
 
-// ============ توليد الأكواد ============
-function makeCode(type){
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // بدون حروف متشابهة
-  let prefix = type === 'BLACK' ? 'BLK' : 'VIP';
-  let random = '';
-  for(let i=0; i<6; i++){
-    random += chars[Math.floor(Math.random()*chars.length)];
-  }
-  return prefix + '-' + random;
+async function refreshAll(){showToast('Refreshing...','info');await loadAllData();showToast('Updated','ok');}
+
+async function loadStudents(){
+  try{
+    const snap=await db.collection('users').get();
+    allStudents=[];
+    snap.forEach(d=>allStudents.push({id:d.id,...d.data()}));
+    const snap2=await db.collection('leaguePoints').get();
+    snap2.forEach(d=>{
+      const ex=allStudents.find(s=>s.id===d.id||s.phone===d.data().phone);
+      if(!ex)allStudents.push({id:d.id,...d.data(),fromLeague:true});
+    });
+    renderStudents();
+  }catch(e){console.error(e);}
 }
 
-async function generateCodes(){
-  const duration = parseInt(document.getElementById('duration').value);
-  const type = document.getElementById('codeType').value;
-  const count = Math.min(50, Math.max(1, parseInt(document.getElementById('count').value)||1));
-  
-  const btn = event.target;
-  btn.disabled = true;
-  btn.textContent = '⏳ جاري التوليد...';
-
-  try {
-    const expireAt = Date.now() + (duration * 24 * 60 * 60 * 1000);
-    const newCodes = [];
-    const updates = {};
-
-    for(let i=0; i<count; i++){
-      let code = makeCode(type);
-      // تأكد إن الكود مش مكرر
-      while(allCodes.some(c => c.code === code)){
-        code = makeCode(type);
-      }
-      updates['accessCodes/'+code] = {
-        code: code,
-        type: type,
-        createdAt: Date.now(),
-        expiresAt: expireAt,
-        duration: duration,
-        activated: false,
-        uid: null,
-        activatedAt: null
-      };
-      newCodes.push(code);
-    }
-
-    await rtdb.ref().update(updates);
-    lastGenerated = newCodes;
-
-    // اعرض الأكواد
-    const list = document.getElementById('generatedList');
-    list.innerHTML = newCodes.map(c => 
-      `<div class="code-box" onclick="copyCode('${c}', this)">${c}</div>`
-    ).join('');
-    document.getElementById('generatedBox').classList.remove('hidden');
-
-    showToast(`✅ تم توليد ${newCodes.length} كود`, 'ok');
-    loadCodes();
-  } catch(e){
-    showToast('❌ ' + e.message, 'err');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🎲 توليد';
-  }
+async function loadExams(){
+  try{
+    const snap=await db.collection('exams').get();
+    allExams=[];
+    snap.forEach(d=>allExams.push({id:d.id,...d.data()}));
+    renderExams();
+  }catch(e){console.error(e);}
 }
 
-function copyCode(code, el){
-  navigator.clipboard.writeText(code).then(()=>{
-    showToast('📋 اتنسخ: ' + code, 'ok');
-    el.style.background = '#065f46';
-    setTimeout(()=>{ el.style.background = '#000'; }, 600);
-  });
-}
-
-function copyAll(){
-  const text = lastGenerated.join('\n');
-  navigator.clipboard.writeText(text).then(()=>{
-    showToast(`📋 اتنسخ ${lastGenerated.length} كود`, 'ok');
-  });
-}
-
-// ============ عرض الأكواد ============
 async function loadCodes(){
-  try {
-    const snap = await rtdb.ref('accessCodes').once('value');
-    allCodes = [];
-    if(snap.exists()){
-      snap.forEach(child => {
-        allCodes.push({ id: child.key, ...child.val() });
-      });
-    }
-    // رتب من الأحدث
-    allCodes.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-    updateStats();
+  try{
+    const snap=await rtdb.ref('accessCodes').once('value');
+    allCodes=[];
+    if(snap.exists())snap.forEach(c=>allCodes.push({id:c.key,...c.val()}));
+    allCodes.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     renderCodes();
-  } catch(e){
-    showToast('❌ ' + e.message, 'err');
-  }
+  }catch(e){console.error(e);}
+}
+
+async function loadAds(){
+  try{
+    const snap=await db.collection('announcements').get();
+    allAds=[];
+    snap.forEach(d=>allAds.push({id:d.id,...d.data()}));
+    renderAds();
+  }catch(e){console.error(e);}
+}
+
+async function loadGroups(){
+  try{
+    const snap=await db.collection('groups').get();
+    allGroups=[];
+    snap.forEach(d=>allGroups.push({id:d.id,...d.data()}));
+    renderGroups();
+  }catch(e){console.error(e);}
 }
 
 function updateStats(){
-  const now = Date.now();
-  let active = 0, used = 0, expired = 0;
-  allCodes.forEach(c => {
-    const isExp = c.expiresAt && c.expiresAt < now;
-    if(isExp) expired++;
-    else if(c.activated) used++;
-    else active++;
-  });
-  document.getElementById('totalCodes').textContent = allCodes.length;
-  document.getElementById('activeCodes').textContent = active;
-  document.getElementById('usedCodes').textContent = used;
-  document.getElementById('expiredCodes').textContent = expired;
+  document.getElementById('statStudents').textContent=allStudents.length||'0';
+  document.getElementById('statExams').textContent=allExams.length||'0';
+  document.getElementById('statCodes').textContent=allCodes.length||'0';
+  document.getElementById('statPrime').textContent=allStudents.filter(s=>s.isPrime||s.prime).length||'0';
+  document.getElementById('statAds').textContent=allAds.filter(a=>a.active).length||'0';
+  document.getElementById('statBattles').textContent='—';
 }
 
-function renderCodes(){
-  const search = (document.getElementById('searchInput').value||'').trim().toUpperCase();
-  const now = Date.now();
-  const tbody = document.getElementById('codesTable');
-
-  let filtered = allCodes.filter(c => 
-    !search || c.code.includes(search) || (c.uid||'').includes(search)
-  );
-
-  if(filtered.length === 0){
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-slate-500 py-6">مفيش أكواد</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = filtered.map(c => {
-    const isExp = c.expiresAt && c.expiresAt < now;
-    let badge, statusText;
-    if(isExp){
-      badge = 'no'; statusText = '⌛ منتهي';
-    } else if(c.activated){
-      badge = 'used'; statusText = '🔒 مستخدم';
-    } else {
-      badge = 'ok'; statusText = '✅ نشط';
-    }
-    const expDate = c.expiresAt ? new Date(c.expiresAt).toLocaleDateString('ar-EG') : '—';
-    const typeBadge = c.type === 'BLACK' 
-      ? '<span class="badge" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff">👑 BLACK</span>'
-      : '<span class="badge" style="background:rgba(245,158,11,.2);color:#fbbf24">VIP</span>';
-
-    return `<tr>
-      <td><span class="code-box" style="padding:6px 10px;font-size:12px;display:inline-block;letter-spacing:1px" onclick="copyCode('${c.code}', this)">${c.code}</span></td>
-      <td>${typeBadge}</td>
-      <td><span class="badge ${badge}">${statusText}</span></td>
-      <td style="font-size:11px;color:#94a3b8">${expDate}</td>
-      <td style="font-size:11px;color:#94a3b8">${c.uid ? c.uid.slice(0,12)+'...' : '—'}</td>
-      <td>
-        <button class="btn-red" style="padding:6px 10px;font-size:10px" onclick="deleteCode('${c.code}')">🗑️</button>
-        ${c.activated ? `<button class="btn-red" style="padding:6px 10px;font-size:10px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000" onclick="resetCode('${c.code}')">♻️</button>` : ''}
-      </td>
-    </tr>`;
+function renderStudents(){
+  const search=(document.getElementById('searchStudents').value||'').trim().toLowerCase();
+  const filter=document.getElementById('filterStudents').value;
+  const tbody=document.getElementById('studentsTable');
+  let filtered=allStudents.filter(s=>{
+    const name=(s.name||'').toLowerCase();
+    const phone=(s.phone||s.id||'').toString();
+    if(search&&!name.includes(search)&&!phone.includes(search))return false;
+    if(filter==='prime'&&!s.isPrime&&!s.prime)return false;
+    if(filter==='banned'&&!s.banned)return false;
+    return true;
+  });
+  if(filtered.length===0){tbody.innerHTML='<tr><td colspan="5" class="empty">No students</td></tr>';return;}
+  tbody.innerHTML=filtered.map(s=>{
+    const isPrime=s.isPrime||s.prime;
+    const isBanned=s.banned;
+    let badge='<span class="badge ok">Active</span>';
+    if(isBanned)badge='<span class="badge no">Banned</span>';
+    else if(isPrime)badge='<span class="badge prime">Prime</span>';
+    return `<tr><td><b>${s.name||'—'}</b></td><td style="font-size:11px;color:#94a3b8">${s.phone||s.id||'—'}</td><td><b style="color:#fbbf24">${s.points||0}</b></td><td>${badge}</td><td><button class="btn btn-gold" style="padding:6px 10px;font-size:10px" onclick="openStudentModal('${s.id}')">Edit</button></td></tr>`;
   }).join('');
 }
 
+function openStudentModal(id){
+  const s=allStudents.find(x=>x.id===id);
+  if(!s)return;
+  document.getElementById('studentId').value=id;
+  document.getElementById('studentName').value=s.name||'';
+  document.getElementById('studentPhone').value=s.phone||id;
+  document.getElementById('studentPoints').value=s.points||0;
+  document.getElementById('studentBanned').value=s.banned?'true':'false';
+  document.getElementById('studentModal').classList.add('show');
+}
+
+async function saveStudent(){
+  const id=document.getElementById('studentId').value;
+  const points=parseInt(document.getElementById('studentPoints').value)||0;
+  const banned=document.getElementById('studentBanned').value==='true';
+  try{
+    await db.collection('users').doc(id).set({points,banned,updatedAt:new Date()},{merge:true});
+    showToast('Saved','ok');
+    closeModal('studentModal');
+    await loadStudents();
+  }catch(e){showToast(e.message,'err');}
+}
+
+async function deleteStudent(){
+  const id=document.getElementById('studentId').value;
+  if(!confirm('Delete student?'))return;
+  try{
+    await db.collection('users').doc(id).delete();
+    showToast('Deleted','ok');
+    closeModal('studentModal');
+    await loadStudents();
+  }catch(e){showToast(e.message,'err');}
+}
+
+function renderExams(){
+  const search=(document.getElementById('searchExams').value||'').trim().toLowerCase();
+  const tbody=document.getElementById('examsTable');
+  let filtered=allExams.filter(e=>{
+    if(!search)return true;
+    return (e.title||'').toLowerCase().includes(search)||(e.subject||'').toLowerCase().includes(search);
+  });
+  if(filtered.length===0){tbody.innerHTML='<tr><td colspan="6" class="empty">No exams</td></tr>';return;}
+  tbody.innerHTML=filtered.map(e=>{
+    const isPrime=e.publishType==='prime'||e.isPremium===true;
+    return `<tr><td><b>${e.title||'—'}</b></td><td>${e.subject||'—'}</td><td>${e.month||'—'}</td><td>${isPrime?'<span class="badge prime">Prime</span>':'<span class="badge ok">Free</span>'}</td><td>${e.questionsCount||e.questions?.length||0}</td><td><button class="btn btn-gold" style="padding:6px 10px;font-size:10px" onclick="openExamModal('${e.id}')">Edit</button><button class="btn btn-red" style="padding:6px 10px;font-size:10px;margin-right:4px" onclick="deleteExam('${e.id}')">Del</button></td></tr>`;
+  }).join('');
+}
+
+function openExamModal(id){
+  document.getElementById('examModalTitle').textContent=id?'Edit Exam':'Add Exam';
+  document.getElementById('examId').value=id||'';
+  if(id){
+    const e=allExams.find(x=>x.id===id);
+    if(e){
+      document.getElementById('examTitle').value=e.title||'';
+      document.getElementById('examSubject').value=e.subject||'';
+      document.getElementById('examMonth').value=e.month||1;
+      document.getElementById('examType').value=(e.publishType==='prime'||e.isPremium)?'prime':'free';
+      document.getElementById('examLink').value=e.link||'';
+      document.getElementById('examCount').value=e.questionsCount||0;
+    }
+  }else{
+    document.getElementById('examTitle').value='';
+    document.getElementById('examSubject').value='';
+    document.getElementById('examMonth').value=1;
+    document.getElementById('examType').value='free';
+    document.getElementById('examLink').value='';
+    document.getElementById('examCount').value=0;
+  }
+  document.getElementById('examModal').classList.add('show');
+}
+
+async function saveExam(){
+  const id=document.getElementById('examId').value;
+  const data={
+    title:document.getElementById('examTitle').value.trim(),
+    subject:document.getElementById('examSubject').value.trim(),
+    month:parseInt(document.getElementById('examMonth').value)||1,
+    publishType:document.getElementById('examType').value,
+    isPremium:document.getElementById('examType').value==='prime',
+    link:document.getElementById('examLink').value.trim(),
+    questionsCount:parseInt(document.getElementById('examCount').value)||0,
+    updatedAt:new Date()
+  };
+  if(!data.title){showToast('Title required','err');return;}
+  try{
+    if(id)await db.collection('exams').doc(id).set(data,{merge:true});
+    else await db.collection('exams').add(data);
+    showToast('Saved','ok');
+    closeModal('examModal');
+    await loadExams();
+    updateStats();
+  }catch(e){showToast(e.message,'err');}
+}
+
+async function deleteExam(id){
+  if(!confirm('Delete exam?'))return;
+  try{
+    await db.collection('exams').doc(id).delete();
+    showToast('Deleted','ok');
+    await loadExams();
+    updateStats();
+  }catch(e){showToast(e.message,'err');}
+}
+
+function renderCodes(){
+  const tbody=document.getElementById('codesTable');
+  const now=Date.now();
+  if(allCodes.length===0){tbody.innerHTML='<tr><td colspan="6" class="empty">No codes</td></tr>';return;}
+  tbody.innerHTML=allCodes.map(c=>{
+    const isExp=c.expiresAt&&c.expiresAt<now;
+    let badge='ok',status='Active';
+    if(isExp){badge='no';status='Expired';}
+    else if(c.activated){badge='warn';status='Used';}
+    const expDate=c.expiresAt?new Date(c.expiresAt).toLocaleDateString('en-GB'):'—';
+    const typeBadge=c.type==='BLACK'?'<span class="badge prime">BLACK</span>':'<span class="badge warn">VIP</span>';
+    return `<tr><td><span style="font-family:monospace;font-weight:900;color:#6ee7b7;cursor:pointer" onclick="copyText('${c.code}')">${c.code}</span></td><td>${typeBadge}</td><td><span class="badge ${badge}">${status}</span></td><td style="font-size:11px;color:#94a3b8">${expDate}</td><td style="font-size:11px;color:#94a3b8">${c.uid?c.uid.slice(0,10)+'...':'—'}</td><td>${c.activated?`<button class="btn btn-gold" style="padding:6px 10px;font-size:10px" onclick="resetCode('${c.code}')">Reset</button>`:''}<button class="btn btn-red" style="padding:6px 10px;font-size:10px;margin-right:4px" onclick="deleteCode('${c.code}')">Del</button></td></tr>`;
+  }).join('');
+}
+
+function openCodeModal(){
+  document.getElementById('generatedCodes').classList.add('hidden');
+  document.getElementById('generatedList').innerHTML='';
+  lastGenCodes=[];
+  document.getElementById('codeModal').classList.add('show');
+}
+
+function makeCode(type){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const prefix=type==='BLACK'?'BLK':'VIP';
+  let random='';
+  for(let i=0;i<6;i++)random+=chars[Math.floor(Math.random()*chars.length)];
+  return prefix+'-'+random;
+}
+
+async function generateCodes(){
+  const duration=parseInt(document.getElementById('codeDuration').value);
+  const type=document.getElementById('codeType').value;
+  const count=Math.min(50,Math.max(1,parseInt(document.getElementById('codeCount').value)||1));
+  try{
+    const expireAt=Date.now()+(duration*24*60*60*1000);
+    const updates={};
+    const newCodes=[];
+    for(let i=0;i<count;i++){
+      let code=makeCode(type);
+      while(allCodes.some(c=>c.code===code))code=makeCode(type);
+      updates['accessCodes/'+code]={code,type,createdAt:Date.now(),expiresAt:expireAt,duration,activated:false,uid:null,activatedAt:null};
+      newCodes.push(code);
+    }
+    await rtdb.ref().update(updates);
+    lastGenCodes=newCodes;
+    document.getElementById('generatedList').innerHTML=newCodes.map(c=>`<div style="background:#000;border:1px dashed rgba(16,185,129,.5);border-radius:10px;padding:12px;font-family:monospace;font-size:15px;text-align:center;letter-spacing:2px;color:#6ee7b7;font-weight:900;cursor:pointer" onclick="copyText('${c}')">${c}</div>`).join('');
+    document.getElementById('generatedCodes').classList.remove('hidden');
+    showToast(`Generated ${count}`,'ok');
+    await loadCodes();
+    updateStats();
+  }catch(e){showToast(e.message,'err');}
+}
+
+function copyAllCodes(){if(lastGenCodes.length)copyText(lastGenCodes.join('\n'));}
+
 async function deleteCode(code){
-  if(!confirm('تأكيد حذف الكود: ' + code + '؟')) return;
-  try {
-    await rtdb.ref('accessCodes/'+code).remove();
-    showToast('🗑️ اتحذف', 'ok');
-    loadCodes();
-  } catch(e){ showToast('❌ '+e.message, 'err'); }
+  if(!confirm('Delete code?'))return;
+  try{await rtdb.ref('accessCodes/'+code).remove();showToast('Deleted','ok');await loadCodes();updateStats();}catch(e){showToast(e.message,'err');}
 }
 
 async function resetCode(code){
-  if(!confirm('إعادة تعيين الكود ' + code + '؟\n(هيبقى متاح لمستخدم جديد)')) return;
-  try {
-    await rtdb.ref('accessCodes/'+code).update({
-      activated: false,
-      uid: null,
-      activatedAt: null
-    });
-    showToast('♻️ اتعاد تعيينه', 'ok');
-    loadCodes();
-  } catch(e){ showToast('❌ '+e.message, 'err'); }
+  if(!confirm('Reset code?'))return;
+  try{await rtdb.ref('accessCodes/'+code).update({activated:false,uid:null,activatedAt:null});showToast('Reset','ok');await loadCodes();}catch(e){showToast(e.message,'err');}
 }
 
-async function deleteExpired(){
-  const now = Date.now();
-  const expired = allCodes.filter(c => c.expiresAt && c.expiresAt < now);
-  if(expired.length === 0){ showToast('مفيش أكواد منتهية', 'info'); return; }
-  if(!confirm(`حذف ${expired.length} كود منتهي؟`)) return;
-  try {
-    const updates = {};
-    expired.forEach(c => { updates['accessCodes/'+c.code] = null; });
+async function deleteExpiredCodes(){
+  const now=Date.now();
+  const expired=allCodes.filter(c=>c.expiresAt&&c.expiresAt<now);
+  if(expired.length===0){showToast('No expired','info');return;}
+  if(!confirm(`Delete ${expired.length}?`))return;
+  try{
+    const updates={};
+    expired.forEach(c=>updates['accessCodes/'+c.code]=null);
     await rtdb.ref().update(updates);
-    showToast(`🗑️ اتحذف ${expired.length} كود`, 'ok');
-    loadCodes();
-  } catch(e){ showToast('❌ '+e.message, 'err'); }
+    showToast(`Deleted ${expired.length}`,'ok');
+    await loadCodes();
+    updateStats();
+  }catch(e){showToast(e.message,'err');}
 }
 
-// ============ Toast ============
-function showToast(msg, type='info'){
-  const box = document.getElementById('toastBox');
-  const div = document.createElement('div');
-  div.className = 'toast ' + type;
-  div.textContent = msg;
-  box.appendChild(div);
-  setTimeout(()=>{ div.style.opacity='0'; setTimeout(()=>div.remove(),300); }, 3000);
+function renderAds(){
+  const div=document.getElementById('adsList');
+  if(allAds.length===0){div.innerHTML='<div class="empty">No ads</div>';return;}
+  div.innerHTML=allAds.map(a=>`<div class="card p-4" style="border-right:4px solid ${a.color||'#f59e0b'}"><div class="flex justify-between items-start gap-3"><div class="flex-1"><div class="flex gap-2 items-center flex-wrap"><b>${a.title||'—'}</b>${a.active?'<span class="badge ok">Active</span>':'<span class="badge no">Paused</span>'}</div><p class="text-slate-300 text-sm mt-2">${a.message||''}</p>${a.link?`<a href="${a.link}" target="_blank" class="text-blue-400 text-xs mt-1 block">${a.link.slice(0,50)}</a>`:''}</div><div class="flex gap-1"><button class="btn btn-gold" style="padding:6px 10px;font-size:10px" onclick="openAdModal('${a.id}')">Edit</button><button class="btn btn-red" style="padding:6px 10px;font-size:10px" onclick="deleteAd('${a.id}')">Del</button></div></div></div>`).join('');
 }
+
+function openAdModal(id){
+  document.getElementById('adModalTitle').textContent=id?'Edit Ad':'Add Ad';
+  document.getElementById('adId').value=id||'';
+  if(id){
+    const a=allAds.find(x=>x.id===id);
+    if(a){
+      document.getElementById('adTitle').value=a.title||'';
+      document.getElementById('adMessage').value=a.message||'';
+      document.getElementById('adLink').value=a.link||'';
+      document.getElementById('adColor').value=a.color||'#ef4444';
+      document.getElementById('adActive').value=a.active?'true':'false';
+    }
+  }else{
+    document.getElementById('adTitle').value='';
+    document.getElementById('adMessage').value='';
+    document.getElementById('adLink').value='';
+    document.getElementById('adColor').value='#ef4444';
+    document.getElementById('adActive').value='true';
+  }
+  document.getElementById('adModal').classList.add('show');
+}
+
+async function saveAd(){
+  const id=document.getElementById('adId').value;
+  const data={title:document.getElementById('adTitle').value.trim(),message:document.getElementById('adMessage').value.trim(),link:document.getElementById('adLink').value.trim(),color:document.getElementById('adColor').value,active:document.getElementById('adActive').value==='true',updatedAt:new Date()};
+  if(!data.title){showToast('Title required','err');return;}
+  try{
+    if(id)await db.collection('announcements').doc(id).set(data,{merge:true});
+    else{data.createdAt=new Date();await db.collection('announcements').add(data);}
+    showToast('Saved','ok');
+    closeModal('adModal');
+    await loadAds();
+    updateStats();
+  }catch(e){showToast(e.message,'err');}
+}
+
+async function deleteAd(id){
+  if(!confirm('Delete ad?'))return;
+  try{await db.collection('announcements').doc(id).delete();showToast('Deleted','ok');await loadAds();updateStats();}catch(e){showToast(e.message,'err');}
+}
+
+function renderGroups(){
+  const div=document.getElementById('groupsList');
+  if(allGroups.length===0){div.innerHTML='<div class="empty">No groups</div>';return;}
+  div.innerHTML=allGroups.map(g=>{const bg=g.platform==='واتساب'?'#25D366':'#0088cc';return `<div class="card p-4" style="border-right:4px solid ${bg}"><div class="flex justify-between items-start gap-3"><div class="flex-1"><b>${g.name||'—'}</b><div class="text-xs text-slate-400 mt-1">${g.platform||''}</div><a href="${g.link||'#'}" target="_blank" class="text-blue-400 text-xs mt-1 block">${(g.link||'').slice(0,50)}</a></div><div class="flex gap-1"><button class="btn btn-gold" style="padding:6px 10px;font-size:10px" onclick="openGroupModal('${g.id}')">Edit</button><button class="btn btn-red" style="padding:6px 10px;font-size:10px" onclick="deleteGroup('${g.id}')">Del</button></div></div></div>`;}).join('');
+}
+
+function openGroupModal(id){
+  document.getElementById('groupModalTitle').textContent=id?'Edit Group':'Add Group';
+  document.getElementById('groupId').value=id||'';
+  if(id){
+    const g=allGroups.find(x=>x.id===id);
+    if(g){
+      document.getElementById('groupName').value=g.name||'';
+      document.getElementById('groupPlatform').value=g.platform||'واتساب';
+      document.getElementById('groupLink').value=g.link||'';
+    }
+  }else{
+    document.getElementById('groupName').value='';
+    document.getElementById('groupPlatform').value='واتساب';
+    document.getElementById('groupLink').value='';
+  }
+  document.getElementById('groupModal').classList.add('show');
+}
+
+async function saveGroup(){
+  const id=document.getElementById('groupId').value;
+  const data={name:document.getElementById('groupName').value.trim(),platform:document.getElementById('groupPlatform').value,link:document.getElementById('groupLink').value.trim()};
+  if(!data.name){showToast('Name required','err');return;}
+  try{
+    if(id)await db.collection('groups').doc(id).set(data,{merge:true});
+    else await db.collection('groups').add(data);
+    showToast('Saved','ok');
+    closeModal('groupModal');
+    await loadGroups();
+  }catch(e){showToast(e.message,'err');}
+}
+
+async function deleteGroup(id){
+  if(!confirm('Delete group?'))return;
+  try{await db.collection('groups').doc(id).delete();showToast('Deleted','ok');await loadGroups();}catch(e){showToast(e.message,'err');}
+}
+
+function switchTab(name,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  el.classList.add('active');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+function copyText(text){
+  navigator.clipboard.writeText(text).then(()=>showToast('Copied','ok')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');ta.remove();
+    showToast('Copied','ok');
+  });
+}
+
+function showToast(msg,type='info'){
+  const box=document.getElementById('toastBox');
+  const div=document.createElement('div');
+  div.className='toast '+type;
+  div.textContent=msg;
+  box.appendChild(div);
+  setTimeout(()=>{div.style.opacity='0';setTimeout(()=>div.remove(),300);},3000);
+}
+
+setInterval(()=>{
+  const el=document.getElementById('currentTime');
+  if(el)el.textContent=new Date().toLocaleTimeString('en-GB');
+},1000);
 </script>
 </body>
 </html>

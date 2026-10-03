@@ -325,7 +325,7 @@ async function loadStudents(){
       if(!ex)allStudents.push({id:d.id,...d.data(),fromLeague:true});
     });
     renderStudents();
-  }catch(e){console.error(e);}
+  }catch(e){console.error(e);showToast('Students: '+e.message,'err');}
 }
 
 async function loadExams(){
@@ -334,7 +334,7 @@ async function loadExams(){
     allExams=[];
     snap.forEach(d=>allExams.push({id:d.id,...d.data()}));
     renderExams();
-  }catch(e){console.error(e);}
+  }catch(e){console.error(e);showToast('Exams: '+e.message,'err');}
 }
 
 async function loadCodes(){
@@ -344,7 +344,7 @@ async function loadCodes(){
     if(snap.exists())snap.forEach(c=>allCodes.push({id:c.key,...c.val()}));
     allCodes.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     renderCodes();
-  }catch(e){console.error(e);}
+  }catch(e){console.error(e);showToast('Codes: '+e.message,'err');}
 }
 
 async function loadAds(){
@@ -353,7 +353,7 @@ async function loadAds(){
     allAds=[];
     snap.forEach(d=>allAds.push({id:d.id,...d.data()}));
     renderAds();
-  }catch(e){console.error(e);}
+  }catch(e){console.error(e);showToast('Ads: '+e.message,'err');}
 }
 
 async function loadGroups(){
@@ -362,7 +362,7 @@ async function loadGroups(){
     allGroups=[];
     snap.forEach(d=>allGroups.push({id:d.id,...d.data()}));
     renderGroups();
-  }catch(e){console.error(e);}
+  }catch(e){console.error(e);showToast('Groups: '+e.message,'err');}
 }
 
 function updateStats(){

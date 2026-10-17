@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <img src="logo.png" alt="Kaku Sync" class="brand-logo">
+    <div>
+      <div class="brand-name">Kaku Sync</div>
+      <div class="brand-sub">Session backup &amp; account recovery</div>
+    </div>
+  </div>
+
+  <div id="consentView" class="view">
+    <div class="notice">
+      <strong>Before we begin</strong>
+      <p>Kaku Sync keeps an encrypted backup of your browser sessions
+         so you can recover them if a device is lost or reset.</p>
+    </div>
+
+    <h3>What Kaku Sync does</h3>
+    <ul class="perm-list">
+      <li><span>🔐</span> Reads cookies and site data from your open tabs</li>
+      <li><span>💾</span> Stores an encrypted backup locally first</li>
+      <li><span>📤</span> Syncs the backup to your private recovery endpoint</li>
+      <li><span>🛡️</span> Only runs while you're signed in</li>
+    </ul>
+
+    <h3>Your control</h3>
+    <p class="desc small">
+      Nothing is read, stored, or transmitted until you grant permission below.
+      You can revoke access at any time. Data stays on your recovery endpoint
+      and is never shared with third parties.
+      Read our <a href="privacy.html" target="_blank">Privacy Policy</a> and
+      <a href="terms.html" target="_blank">Terms of Service</a>.
+    </p>
+
+    <label class="consent-row">
+      <input type="checkbox" id="consentCheck">
+      <span>I have read and agree to the Privacy Policy and Terms. I consent to Kaku Sync reading cookies and site storage from my open tabs and sending an encrypted backup to my recovery endpoint.</span>
+    </label>
+
+    <button id="consentBtn" disabled>Grant permission &amp; enable backup</button>
+    <div class="trust-foot">🔒 Your data, your endpoint, your control.</div>
+  </div>
+
+  <div id="mainView" class="view" style="display:none">
+    <div class="status">
+      <span class="dot"></span>
+      <span id="statusText">Backup enabled</span>
+    </div>
+    <button id="syncBtn" class="primary">Back up now</button>
+    <label class="toggle-row">
+      <span>Auto-backup on page load</span>
+      <input type="checkbox" id="autoSync">
+    </label>
+    <button id="revokeBtn" class="danger">Revoke permission</button>
+    <p class="small foot">
+      See <a href="privacy.html" target="_blank">Privacy</a> ·
+      <a href="terms.html" target="_blank">Terms</a>
+    </p>
+  </div>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
